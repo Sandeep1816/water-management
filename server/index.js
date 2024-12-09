@@ -2,6 +2,7 @@ const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
 const WorkerModel =require('./models/Worker')
+const bcrypt = require("bcrypt")
 
 const app = express()
 
@@ -14,12 +15,19 @@ app.post("/login", (req,res)=>{
     const {number, password} = req.body;
     WorkerModel.findOne({number: number})
     .then(user =>{
+
+       
         if(user){
-        if(user.password === password){
-            res.json("Success")
-        }else{
-            res.json("the password is incorrect")
-        }
+            bcrypt.compare(password, user.password, (err, response)=>{
+                if(err) {
+                    return res.json("Incorrect Password")
+                }
+                    if(response){
+                        res.json("Success")
+    
+                    }
+    
+            })
     }else{
         res.json("No record existed")
     }
@@ -27,12 +35,19 @@ app.post("/login", (req,res)=>{
 })
 
 app.post('/register', (req,res)=>{
-    WorkerModel.create(req.body)
-    .then(workers => res.json(workers))
-    .catch(error=> res.json(error))
+    const {name,number,password} = req.body;
+    bcrypt.hash(password, 10)
+    .then(hash => {
+        WorkerModel.create({name,number,password: hash})
+        .then(workers => res.json(workers))
+        .catch(error=> res.json(error))
+        
     
+    }).catch(err=> console.log(err.message))
 
-})
+    })
+
+
 
 app.listen(3000, ()=>{
     console.log(`server is listening to the port `)
