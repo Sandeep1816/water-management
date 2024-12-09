@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import Login from './Login'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
     const [name, setName]= useState()
@@ -12,6 +14,11 @@ const Signup = () => {
         .then(result => console.log(result))
         .catch(err=> console.log(err))
 
+    }
+ const navigate = useNavigate()
+    const handleSignin = ()=>{
+      // console.log("signin")
+      navigate('/login')
     }
   return (
    <>
@@ -31,6 +38,9 @@ const Signup = () => {
 
    <button>Register</button>
   </form>
+
+  <hr />
+<div>  Already having Account  <h2 onClick={handleSignin}>SignIn</h2></div>
    
    
    
